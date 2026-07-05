@@ -47,8 +47,6 @@ BezierMove(x1, y1, x2, y2, steps, sleepMs) {
     my := midY + RandInt(-offY, offY)
 
     ; ── KUNCI: clamp control point ke bounding box x1..x2, y1..y2 ──
-    ; Ini yang mencegah kurva "muter" — kalau mx/my keluar dari
-    ; rentang antara start dan end, bezier bisa bikin loop
     minX := (x1 < x2) ? x1 : x2
     maxX := (x1 > x2) ? x1 : x2
     minY := (y1 < y2) ? y1 : y2
@@ -72,12 +70,6 @@ BezierMove(x1, y1, x2, y2, steps, sleepMs) {
     }
     ; Hard snap ke target — hapus semua accumulated error
     MouseMove(x2, y2, 0)
-    ; Settle sebelum klik: app UWP/XAML butuh waktu buat "sadar" cursor
-    ; udah pindah (proses hover/hit-test di UI thread-nya) sebelum klik
-    ; ditembak, kalau kepepet klik jatuh ke elemen lama.
-    ; Dirandom (bukan fixed 120ms) biar gak jadi fingerprint timing yang
-    ; kelewat presisi/robotic — manusia juga gak pernah diam persis
-    ; sekian ms yang sama tiap kali.
     Sleep(RandInt(90, 150))
 }
 
@@ -91,9 +83,6 @@ HumanClick(x, y, variance := 8) {
                RandInt(CFG["bez_steps_min"], CFG["bez_steps_max"]),
                RandInt(CFG["bez_sleep_min"], CFG["bez_sleep_max"]))
     Sleep(RandInt(CFG["click_pre"], CFG["click_pre"] + 15))
-    ; Paksa event hover baru (MouseMove ke posisi identik kadang gak
-    ; menghasilkan event baru), sambil dirandom biar gak seragam:
-    ; arah nudge (+1/-1) dan jeda antar-step di-random tipis.
     nudgeX := (RandInt(0, 1) = 0) ? tx + 1 : tx - 1
     MouseMove(nudgeX, ty, 0)
     Sleep(RandInt(15, 30))
@@ -129,9 +118,9 @@ DirectClick(x, y) {
     iy := Integer(y)
     MouseMove(ix, iy, 0)
     ; FIX: sama, paksa refresh hover + kasih waktu app sadar posisi baru
-    Sleep(20)
+    Sleep(30)
     MouseMove(ix + 1, iy, 0)
-    Sleep(20)
+    Sleep(30)
     MouseMove(ix, iy, 0)
     Sleep(100)
     Click()
@@ -142,9 +131,9 @@ DirectDoubleClick(x, y) {
     ix := Integer(x)
     iy := Integer(y)
     MouseMove(ix, iy, 0)
-    Sleep(20)
+    Sleep(30)
     MouseMove(ix + 1, iy, 0)
-    Sleep(20)
+    Sleep(30)
     MouseMove(ix, iy, 0)
     Sleep(100)
     Click(, , , 2)

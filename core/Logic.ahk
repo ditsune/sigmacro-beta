@@ -310,17 +310,15 @@ FillFieldWinV(clipIndex_x, clipIndex_y) {
 DoLoginClipboard() {
     global COORD, CFG
     EnsureRobloxFocused()
-    HumanClick(COORD["login_focus_x"], COORD["login_focus_y"])
-    Delay()
     HumanClick(COORD["login_pass_x"],  COORD["login_pass_y"])
-    Sleep(600)
+    Sleep(200)
     HumanClick(COORD["login_user_x"],  COORD["login_user_y"])
     Sleep(50)
     Send("^a")
     Sleep(50)
     Send("#v")
     Sleep(CFG["winv_delay"])
-    HumanClick(COORD["login_submit1_x"], COORD["login_submit1_y"])
+    DirectClick(COORD["login_submit1_x"], COORD["login_submit1_y"])
     Sleep(250)
     Send("{Tab}")
     Sleep(200)
@@ -328,7 +326,7 @@ DoLoginClipboard() {
     Delay()
     Send("#v")
     Sleep(CFG["winv_delay"])
-    HumanClick(COORD["login_submit1_x"], COORD["login_submit1_y"])
+    DirectClick(COORD["login_submit1_x"], COORD["login_submit1_y"])
     RandSleep(CFG["submit_delay"], CFG["submit_delay"] + 100)
     Send("{Enter}")
     Log("🚀 Login clipboard dikirim")
@@ -381,16 +379,14 @@ LoginWebRoblox() {
     global COORD, CFG
 
     ; Ini login di browser Roblox web — bukan UWP
-    ; Focus ke browser dulu
+    ; klik ke btn clear form
     DirectClick(553, 838)
-    Sleep(200)
+    Sleep(100)
 
     ; Klik field username di web
-    HumanClick(COORD["web_user_x"], COORD["web_user_y"])
-    Sleep(200)
     Send("#v")
     Sleep(CFG["winv_delay"])
-    HumanClick(477, 673) ; klik item clipboard (username)
+    DirectClick(477, 673) ; klik item clipboard (username)
     Sleep(400)
 
     Send("{Tab}")
@@ -398,7 +394,7 @@ LoginWebRoblox() {
 
     Send("#v")
     Sleep(CFG["winv_delay"])
-    HumanClick(552, 589) ; klik item clipboard (password)
+    DirectClick(552, 589) ; klik item clipboard (password)
     RandSleep(CFG["submit_delay"], CFG["submit_delay"] + 100)
     Send("{Enter}")
     Log("🚀 Login Web Roblox dikirim")
@@ -409,22 +405,22 @@ AutoTele() {
 
     ; ── copy username & password dari Telegram
     DirectDoubleClick(COORD["usn_tele_x"], COORD["usn_tele_y"])
-    Sleep(200)
+    Sleep(100)
     Send("^c")
     ClipWait(2)
-    Sleep(200)
-    DirectDoubleClick(COORD["pw_tele_x"], COORD["pw_tele_y"])
-    Sleep(200)
+    Sleep(100)
+    DirectDoubleClick(COORD["pw_tele1_x"], COORD["pw_tele1_y"])
+    Sleep(100)
     Send("^c")
     ClipWait(2)
-    Sleep(200)
+    Sleep(100)
 
     ; Copy bc ke 1
     DirectDoubleClick(COORD["bc_tele1_x"], COORD["bc_tele1_y"])
-    Sleep(200)
+    Sleep(100)
     Send("^c")
     ClipWait(2)
-    Sleep(300)
+    Sleep(250)
 
     LoginWebRoblox()
     Sleep(300)
@@ -506,11 +502,11 @@ PastePwClipboardWeb() {
 CopyBCWebsite() {
     global COORD
     DirectClick(COORD["web_bc1_x"], COORD["web_bc1_y"])
-    Sleep(350)
+    Sleep(250)
     DirectClick(COORD["web_bc2_x"], COORD["web_bc2_y"])
-    Sleep(350)
+    Sleep(250)
     DirectClick(COORD["web_bc3_x"], COORD["web_bc3_y"])
-    Sleep(350)
+    Sleep(250)
     Log("🔄 BC Website diklik")
 }
 
@@ -899,7 +895,7 @@ DoLoginClipboardWeb() {
     HumanClick(COORD["login_focus_x"], COORD["login_focus_y"])
     Delay()
     HumanClick(COORD["login_pass_x"],  COORD["login_pass_y"])
-    Sleep(600)
+    Sleep(200)
     HumanClick(COORD["login_user_x"],  COORD["login_user_y"])
     Sleep(50)
     Send("^a")
@@ -907,7 +903,7 @@ DoLoginClipboardWeb() {
     Send("#v")
     Sleep(CFG["winv_delay"])
     HumanClick(COORD["login_submit1_x"], COORD["login_submit1_y"])
-    Sleep(250)
+    Sleep(200)
     Send("{Tab}")
     Sleep(200)
     Send("^a")
@@ -944,29 +940,47 @@ BeliRobux(imageName, label) {
     HumanClick(COORD["robux_logo_x"], COORD["robux_logo_y"])
     Sleep(1100)
 
-    ; Step 3: Cari item dengan scroll
-    maxScroll := 3
-    loop maxScroll {
-        if FindRobuxItemStable(imageName, &ix, &iy) {
-            Log("✅ " label " ditemukan di " ix ", " iy)
-            HumanClick(ix + 577, iy + 22)
-            Log("🛒 Klik Purchase " label)
+    ; Step 3: Cari item — scroll down 2×, lalu scroll up 2×
+    found := false
 
-            ; Step 4: Cek popup Don't Buy (tunggu sampai 5 detik)
-            if WaitForDontBuy(5000) {
-                Log("⚠️ Terdeteksi, silakan review manual")
-            } else {
-                Log("ℹ️ Pop-up tidak terdeteksi, tidak ada pembelian terjadi")
-            }
-            return true
+    ; Scroll down max 2×
+    loop 2 {
+        if FindRobuxItemStable(imageName, &ix, &iy) {
+            found := true
+            break
         }
-        Log("🔍 " label " belum ketemu, scroll... (" A_Index "/" maxScroll ")")
+        Log("🔍 " label " belum ketemu, scroll down... (" A_Index "/2)")
         Send("{WheelDown 3}")
-        ; FIX: settle time dinaikkan 500ms → 700ms
         Sleep(700)
     }
 
-    Log("❌ " label " tidak ditemukan setelah " maxScroll " scroll")
+    ; Kalau belum ketemu, scroll up max 2×
+    if !found {
+        loop 2 {
+            if FindRobuxItemStable(imageName, &ix, &iy) {
+                found := true
+                break
+            }
+            Log("🔍 " label " belum ketemu, scroll up... (" A_Index "/2)")
+            Send("{WheelUp 3}")
+            Sleep(700)
+        }
+    }
+
+    if found {
+        Log("✅ " label " ditemukan di " ix ", " iy)
+        DirectClick(ix + 577, iy + 22)
+        Log("🛒 Klik Purchase " label)
+
+        if WaitForDontBuy(5000) {
+            Log("⚠️ Terdeteksi, silakan review manual")
+        } else {
+            Log("ℹ️ Pop-up tidak terdeteksi, tidak ada pembelian terjadi")
+        }
+        return true
+    }
+
+    Log("❌ " label " tidak ditemukan setelah 2× down + 2× up")
     return false
 }
 
@@ -1076,6 +1090,7 @@ SheetBelomWeb() {
 ;  CTRL+G — RUN SNIPPET (Dev Console)
 ; ────────────────────────────────────────────────────────────
 PutusXbox() {
+    EnsureRobloxFocused()
     Send("^+i")
     Sleep(1400)
 
@@ -1090,7 +1105,7 @@ PutusXbox() {
     HumanClick(1832, 113)
     RandSleep(1100, 1500)
     HumanClick(985, 45)
-    RandSleep(70, 180)
+    RandSleep(70, 100)
     HumanClick(997, 238)
 }
 
@@ -1098,28 +1113,28 @@ PutusXbox() {
 ;  CTRL+L — LOGOUT XBOX
 ; ────────────────────────────────────────────────────────────
 LogoutRoblox() {
-
+    EnsureRobloxFocused()
     HumanClick(985, 45)
-    RandSleep(100, 180)
+    RandSleep(70, 100)
 
     HumanClick(1001, 367)
-    RandSleep(100, 200)
+    RandSleep(70, 100)
 
     HumanClick(1047, 365)
-    RandSleep(100, 200)
+    RandSleep(70, 100)
 
     Loop 6 {
     Send("{WheelDown}")
-    Sleep(RandInt(5, 12))
+    Sleep(RandInt(6, 12))
     }
 
-    RandSleep(120, 280)
+    RandSleep(70, 100)
 
     HumanClick(1451, 410)
-    RandSleep(70, 200)
+    RandSleep(70, 100)
 
     HumanDoubleClick(1494, 377)
-    RandSleep(60, 140)
+    RandSleep(70, 100)
 }
 
 /* ; klik tele dan enter (tambahin kalo mau)

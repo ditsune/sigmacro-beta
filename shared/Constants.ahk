@@ -116,8 +116,10 @@ global COORD := Map(
     ; ── TELEGRAM AUTO ─────────────────────────────────────────
     "usn_tele_x",        1481,
     "usn_tele_y",        974,
-    "pw_tele_x",         1480,
-    "pw_tele_y",         992,
+    "pw_tele1_x",         1480,
+    "pw_tele1_y",         992,
+    "pw_tele2_x",        1546,
+    "pw_tele2_y",        992,
     "bc_tele1_x",        1508,
     "bc_tele1_y",        1010,
     "bc_tele2_x",        1592,
