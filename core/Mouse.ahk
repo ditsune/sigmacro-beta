@@ -1,9 +1,5 @@
 ; ============================================================
 ;  core/Mouse.ahk — Human-like mouse movement
-;  FIX: Click() harus pakai koordinat eksplisit di AHK v2
-;       Click() kosong = klik di posisi mouse saat itu,
-;       tapi ada race condition dengan MouseMove speed=0.
-;       Solusi: selalu pass x,y ke Click langsung.
 ; ============================================================
 
 RandInt(lo, hi) {

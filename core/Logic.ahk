@@ -336,11 +336,11 @@ DoLoginClipboard() {
 DoLoginWebsite() {
     global COORD, CFG
 
-    HumanClick(COORD["web_tab1_x"], COORD["web_tab1_y"])
+    DirectClick(COORD["web_tab1_x"], COORD["web_tab1_y"])
     Sleep(150)
-    HumanClick(COORD["web_tab2_x"], COORD["web_tab2_y"])
+    DirectClick(COORD["web_tab2_x"], COORD["web_tab2_y"])
     Sleep(150)
-    HumanClick(COORD["web_tab3_x"], COORD["web_tab3_y"])
+    DirectClick(COORD["web_tab3_x"], COORD["web_tab3_y"])
     Sleep(150)
 
     HumanClick(COORD["login_focus_x"], COORD["login_focus_y"])
@@ -954,7 +954,7 @@ BeliRobux(imageName, label) {
 
     ; Kalau belum ketemu, scroll up max 2×
     if !found {
-        loop 3 {
+        loop 2 {
             if FindRobuxItemStable(imageName, &ix, &iy) {
                 found := true
                 break
@@ -1102,6 +1102,8 @@ PutusXbox() {
 
     HumanClick(1832, 113)
     RandSleep(1100, 1500)
+    Send("{PrintScreen}")
+    RandSleep(70, 100)
     HumanClick(985, 45)
     RandSleep(70, 100)
     HumanClick(997, 238)
